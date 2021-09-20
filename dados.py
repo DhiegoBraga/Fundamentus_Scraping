@@ -1,7 +1,7 @@
 Sistemas = {
 
     'webdriver_config':{
-        'executable_path':r'\Documents\Python Scripts\Suprimentos_Manserv\Suprimentos_Manserv\chromedriver.exe'
+        'executable_path':r'\Documents\Python Scripts\Suprimentos\Fundamentus_Scraping\chromedriver.exe'
     },
     'fluig':{
         'urls':{
@@ -62,7 +62,8 @@ Sistemas = {
             "label_path_justificativa": "txt_Preferences_Attributes_1__valor",
             "label_path_prisma": "txt_Preferences_Attributes_4__valor",
         },
-        "Report_info":"Relatorio_Relatorio de Acompanhamento - Data Aprovacao Req. _"
+        "Report_info":"Relatorio_Relatorio de Acompanhamento - Data Aprovacao Req. _",
+        "colunas_a_deletar": ['Qtde. Recebida','Conta Contábil','Solicitante','Data Entrega','Dias Pendentes - Requisicão','Cargo - Aprovador - Requisicão','Dias Pendentes - Pré-Pedido','Moeda','Fator de conversão','Dias até Gerar Cotação','Dias até Gerar Pré-Pedido','Dias até Gerar Pedido','Dias até Entrega']
     }
 }
 

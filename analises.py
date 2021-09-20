@@ -109,3 +109,15 @@ class Agrupando_Relatorios:
             dataframe_hierarquia["Fornecedor"] = lista_tratada_fornecedor
         del(dataframe_hierarquia['Unnamed: 0'])
         dataframe_hierarquia.to_excel(dir_base + Dir().get_separator() + "BD_Pedidos" + '.xlsx')
+
+    def DF_RMs_Mercado(self):
+        dir_listado = Dir().dir_makefolder(Dir().dir_sistema("mercado"),'BD_RMs')
+        dir_base = Dir().dir_makefolder(Dir().dir_sistema("BD_Base"),'Suprimentos')
+        lista_caminho_rms = Dir().list_files(dir_listado)
+        dataframe_rm = pd.DataFrame()
+        for arquivo in lista_caminho_rms:
+            df_temp = pd.read_excel(dir_listado + Dir().get_separator() + arquivo,1)
+            dataframe_rm = pd.concat([dataframe_rm,df_temp])
+        for coluna in dados_sistema['mercado']['colunas_a_deletar']:
+            del(dataframe_rm[coluna])
+        dataframe_rm.to_excel(dir_base + Dir().get_separator() + "BD_RMs" + '.xlsx')

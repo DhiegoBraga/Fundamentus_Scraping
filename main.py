@@ -20,4 +20,9 @@ class Create_Base_Sheets:
         relatorios.Relatorios_Fluig("").save_table_pedido(lista_ut_coligada[1],lista_ut_coligada[0])
         analises.Agrupando_Relatorios().DF_Pedidos()
 
-Create_Base_Sheets().pedido_base()
+    def bd_rms(self):
+        #relatorios.Relatorio_Mercado(self.lista_suprimentos_base).save_report()
+        analises.Agrupando_Relatorios().DF_RMs_Mercado()
+        
+
+Create_Base_Sheets().bd_rms()
