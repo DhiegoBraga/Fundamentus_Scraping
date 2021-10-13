@@ -1,6 +1,7 @@
 from numpy.core.numeric import NaN
 from numpy.lib.arraysetops import isin
 import pandas as pd
+from pandas.io import api
 import relatorios
 import time
 from datetime import datetime
@@ -686,6 +687,22 @@ class Relatorios_frequencia:
                 else:
                     lista_status_geral.append("Pendente - 2ª Fase")
         BD_frequencia_rm['Status Geral'] = lista_status_geral
+        lista_status_nf = []
+        for vlrpedido, vlrnf in zip(BD_frequencia_rm['Preço Total Pedido'].tolist(),BD_frequencia_rm['Valor Total NFs'].tolist()):
+            if vlrpedido == 0 and vlrnf == "-":
+                lista_status_nf.append("-")
+            elif vlrpedido == 0:
+                lista_status_nf.append('Divergencia')
+            elif vlrnf == '-':
+                lista_status_nf.append('Sem informação')
+            else:
+                resultado = int(vlrpedido) - int(vlrnf)
+                if resultado == 0:
+                    lista_status_nf.append('Pagamento integral')
+                else:
+                    lista_status_nf.append('Pendencia no pagamento')
+        BD_frequencia_rm['Status NF'] = lista_status_nf
+
         BD_frequencia_rm.to_excel(self.dir_base_freq + Dir().get_separator() + "BD_Resumo_StatusGeral" + '.xlsx')
 
     def frequencia_RM_Pedido(self):
@@ -887,4 +904,4 @@ class Linkando_relatorios:
 
 #Relatorios_frequencia().frequencia_pedido()
 #Relatorios_frequencia().resumo_rm()
-Agrupando_Relatorios().DF_Justificativa()
+#Agrupando_Relatorios().DF_Justificativa()
