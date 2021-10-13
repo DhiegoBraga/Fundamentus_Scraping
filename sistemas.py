@@ -1,11 +1,11 @@
 from datetime import time
-
 from selenium.webdriver.common import by
 import dados, time
 from diretorio import Dir_analise as dir
 from selenium import webdriver
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 
 class Fluig:
 
@@ -228,7 +228,7 @@ class Mercado_Eletronico:
         else:
             self.__driver.find_element(By.ID,self.html_mercado['html_elements']['link_path_relatorio108']).click()
 
-    def get_report_from_ut(self,ut):
+    def get_report_from_ut(self,ut,data_inicio,data_fim):
         try:
            self.__driver.implicitly_wait(30)
            self.__driver.find_element(By.ID,self.html_mercado['html_elements']['combox_path_centrocusto'])
@@ -236,6 +236,8 @@ class Mercado_Eletronico:
             print('A')
         else:
             Select(self.__driver.find_element(By.ID,self.html_mercado['html_elements']['combox_path_centrocusto'])).select_by_visible_text(ut)
+            self.__driver.find_element(By.ID,self.html_mercado['html_elements']['data_inicio_path']).send_keys(Keys.UP + "0" + data_inicio)
+            self.__driver.find_element(By.ID,self.html_mercado['html_elements']['data_fim_path']).send_keys(Keys.UP + data_fim)
             self.__driver.find_element(By.ID,self.html_mercado['html_elements']['checkbox_path_sendemail']).click()
             self.__driver.find_element(By.ID,self.html_mercado['html_elements']['button_path_processar_rel']).click()
             time.sleep(1)
@@ -292,3 +294,32 @@ class Mercado_Eletronico:
             acao = "atualizar"
             numero_processo = ""
         return acao, numero_processo
+
+    def get_info_rm(self,lista_rm):
+        self.get_logged()
+        dict_vazio = {
+            'RM':[],
+            'Justificativa':[],
+            'N_Prisma':[]
+        }
+        for rm in lista_rm:
+            self.__driver.get((self.html_mercado['urls']['url_base_rm'] + str(rm)))
+            try:
+                self.__driver.implicitly_wait(30)
+                self.__driver.find_element(
+                    By.ID,
+                    self.html_mercado['html_elements']['label_path_justificativa']
+                )
+            except Exception:
+                pass
+            else:
+                justificativa_txt = self.__driver.find_element(
+                    By.ID,
+                    self.html_mercado['html_elements']['label_path_justificativa']).text
+                prisma_txt = self.__driver.find_element(
+                    By.ID,
+                    self.html_mercado['html_elements']['label_path_prisma']).text
+                dict_vazio['RM'].append(str(rm))
+                dict_vazio['Justificativa'].append(justificativa_txt)
+                dict_vazio['N_Prisma'].append(prisma_txt)
+        return dict_vazio

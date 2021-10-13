@@ -5,6 +5,7 @@ from typing import Counter
 import zipfile
 from bs4 import BeautifulSoup
 from numpy import extract
+import selenium
 from diretorio import Dir_analise as dir
 import pandas as pd
 import sistemas, dados, database
@@ -72,24 +73,28 @@ class Relatorios_Fluig:
             
 class Relatorio_Mercado:
 
-    def __init__(self, LISTA_UT):
+    def __init__(self, LISTA_UT,DATA_INICIO,DATA_FIM):
         self.driver_mercado = sistemas.Mercado_Eletronico()
         self.html_mercado = dados.Sistemas['mercado']
         self.dir_mercado = dir().dir_sistema('mercado')
         self.lista_ut = LISTA_UT
+        self.data_inicio = DATA_INICIO
+        self.data_fim = DATA_FIM
 
     def save_report(self):
         self.driver_mercado.get_logged()  
         lista_processo = []
         lista_ut_processado = []
+        lista_data_inicio_processado = []
+        lista_data_fim_processado = []
         dir_rm = dir().dir_makefolder(
             self.dir_mercado,              
             "BD_RMs")
-        for ut in self.lista_ut:
+        for ut,data_inicio, data_fim in zip(self.lista_ut,self.data_inicio,self.data_fim):
             count_report = 0
             while count_report == 0:
                 self.driver_mercado.get_report_page()
-                self.driver_mercado.get_report_from_ut(ut)
+                self.driver_mercado.get_report_from_ut(ut,data_inicio,data_fim)
                 count = 0
                 while count == 0:
                     status = self.driver_mercado.obter_labels_processo()[0]
@@ -101,10 +106,12 @@ class Relatorio_Mercado:
                         self.driver_mercado.gerar_relatorio()
                         lista_processo.append(self.driver_mercado.obter_labels_processo()[1])
                         lista_ut_processado.append(ut)
+                        lista_data_inicio_processado.append(data_inicio)
+                        lista_data_fim_processado.append(data_fim)
                         count = 1
                         count_report = 1
         time.sleep(10)
-        for processo, ut in zip(lista_processo, lista_ut_processado):
+        for processo, ut,data_inicio,data_fim in zip(lista_processo, lista_ut_processado,lista_data_inicio_processado,lista_data_fim_processado):
             file_zip = (
                 dir().dir_base()
                 + dir().get_separator()
@@ -128,7 +135,15 @@ class Relatorio_Mercado:
                 + dir().get_separator()
                 + "RMs_UT_"
                 + ut 
+                + data_inicio
+                + '_'
+                + data_fim
                 + '.xlsx'
             )
+            dir().remove_file(new_file)
             dir().rename_file(old_file,new_file)
         return lista_processo, lista_ut_processado
+
+    def save_justificativa(self,lista):
+        dict_just = self.driver_mercado.get_info_rm(lista)
+        return dict_just
